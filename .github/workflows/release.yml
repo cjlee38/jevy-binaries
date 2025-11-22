@@ -1,0 +1,65 @@
+name: Build FFmpeg Static
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            target: mac-x64
+          - os: macos-latest
+            target: mac-arm64
+            runner_label: macos-14
+          - os: windows-latest
+            target: win-x64
+          - os: windows-latest
+            target: win-arm64
+            env_arch: aarch64
+          - os: ubuntu-latest
+            target: linux-x64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install dependencies (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y yasm nasm pkg-config
+      - name: Install dependencies (macOS)
+        if: contains(matrix.os, 'macos')
+        run: |
+          brew install yasm nasm
+      - name: Install dependencies (Windows)
+        if: contains(matrix.os, 'windows')
+        uses: ilammy/setup-nasm@v1
+      - name: Cache vcpkg
+        uses: actions/cache@v3
+        with:
+          path: vcpkg
+          key: ${{ matrix.os }}-${{ matrix.target }}-vcpkg-${{ hashFiles('src/main.rs') }}
+      - name: Run Build Factory
+        shell: bash
+        env: 
+          OVERRIDE_ARCH: ${{ matrix.env_arch }}
+        run: cargo run --release
+      - name: Compress Artifacts
+        shell: bash
+        run: |
+          cd dist
+          tar -czvf ffmpeg-${{ matrix.target }}.tar.gz ${{ matrix.target }}
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: dist/ffmpeg-${{ matrix.target }}.tar.gz
