@@ -1,11 +1,14 @@
-use std::process::Command;
 use anyhow::Result;
-use std::{env, path::{Path, PathBuf}};
+use std::process::Command;
+use std::{
+    env,
+    path::{Path, PathBuf},
+};
 
 const OS: &str = env::consts::OS;
 const ARCH: &str = env::consts::ARCH;
 
-pub fn install_ffmpeg(vcpkg_root: &Path, triplet: &str) -> Result<(String, PathBuf)> {
+pub fn install_ffmpeg(vcpkg_root: &Path, triplet: &str) -> Result<PathBuf> {
     let vcpkg_exe = match OS {
         "windows" => "vcpkg.exe",
         _ => "./vcpkg",
@@ -29,20 +32,6 @@ pub fn install_ffmpeg(vcpkg_root: &Path, triplet: &str) -> Result<(String, PathB
         anyhow::bail!("vcpkg install failed");
     }
 
-    let target_name = format!(
-        "ffmpeg-{}-{}",
-        match OS {
-            "macos" => "mac",
-            "windows" => "win",
-            _ => "linux",
-        },
-        match ARCH {
-            "x86_64" => "x64",
-            _ => "arm64",
-        }
-    );
-
     let installed_path = vcpkg_root.join("installed").join(triplet);
-
-    Ok((target_name, installed_path))
+    Ok(installed_path)
 }

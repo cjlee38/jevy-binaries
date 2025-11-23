@@ -21,12 +21,12 @@ fn main() -> Result<()> {
     println!(">>> Vcpkg Triplet: {}", triplet);
     let vcpkg_root = prepare_vcpkg(&triplet)?;
 
-    let ffmpeg_artifact = install_ffmpeg(&vcpkg_root, &triplet)?;
-    let pdfium_artifact = install_pdfium(&vcpkg_root)?;
+    let ffmpeg_path = install_ffmpeg(&vcpkg_root, &triplet)?;
+    let pdfium_path = install_pdfium(&vcpkg_root)?;
 
     harvest_artifacts(vec![
-        ffmpeg_artifact,
-        pdfium_artifact,
+        ("ffmpeg".to_string(), ffmpeg_path),
+        ("pdfium".to_string(), pdfium_path),
     ])?;
 
     println!(">>> Complete!");
@@ -109,54 +109,6 @@ fn prepare_vcpkg(triplet: &str) -> Result<PathBuf> {
 
     Ok(vcpkg_dir)
 }
-
-// fn create_custom_triplet(vcpkg_root: &Path, triplet: &str) -> Result<()> {
-//     if OS == "windows" {
-//         return Ok(());
-//     }
-
-//     let triplets_dir = vcpkg_root.join("triplets");
-//     if !triplets_dir.exists() {
-//         fs::create_dir_all(&triplets_dir)?;
-//     }
-
-//     let triplet_file = triplets_dir.join(format!("{}.cmake", triplet));
-
-//     // let content = if OS == "macos" {
-//     //     let arch = if triplet.starts_with("arm64") { "arm64" } else { "x86_64" };
-//     //     format!(
-//     //         "set(VCPKG_TARGET_ARCHITECTURE {})\n\
-//     //          set(VCPKG_CRT_LINKAGE dynamic)\n\
-//     //          set(VCPKG_LIBRARY_LINKAGE static)\n\
-//     //          set(VCPKG_CMAKE_SYSTEM_NAME Darwin)\n",
-//     //         arch
-//     //     )
-//     // } else if OS == "linux" {
-//     //     "set(VCPKG_TARGET_ARCHITECTURE x64)\n\
-//     //      set(VCPKG_CRT_LINKAGE dynamic)\n\
-//     //      set(VCPKG_LIBRARY_LINKAGE static)\n\
-//     //      set(VCPKG_CMAKE_SYSTEM_NAME Linux)\n".to_string()
-//     // } else {
-//     //     String::new()
-//     // };
-
-//     // if !content.is_empty() {
-//     //     fs::write(triplet_file, content)?;
-//     //     println!(">>> Created custom triplet: {}", triplet);
-//     // }
-//     let content = format!(
-//         "set(VCPKG_TARGET_ARCHITECTURE {})\n\
-//          set(VCPKG_CRT_LINKAGE dynamic)\n\
-//          set(VCPKG_LIBRARY_LINKAGE static)\n\
-//          set(VCPKG_CMAKE_SYSTEM_NAME Darwin)\n",
-//         ARCH
-//     );
-//     fs::write(triplet_file, content)?;
-//     println!(">>> Created custom triplet: {}", triplet);
-
-//     Ok(())
-// }
-
 
 fn harvest_artifacts(artifacts: Vec<(String, PathBuf)>) -> Result<()> {
     let dist_root = Path::new("dist");

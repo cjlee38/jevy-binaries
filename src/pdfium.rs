@@ -38,25 +38,12 @@ fn determine_pdfium_platform() -> String {
     format!("pdfium-{}-{}.tgz", platform, arch_str)
 }
 
-pub fn install_pdfium(vcpkg_root: &Path) -> Result<(String, PathBuf)> {
+pub fn install_pdfium(vcpkg_root: &Path) -> Result<PathBuf> {
     let pdfium_dir = vcpkg_root.join("pdfium");
-
-    let target_name = format!(
-        "pdfium-{}-{}",
-        match OS {
-            "macos" => "mac",
-            "windows" => "win",
-            _ => "linux",
-        },
-        match ARCH {
-            "x86_64" => "x64",
-            _ => "arm64",
-        }
-    );
 
     if pdfium_dir.exists() {
         println!(">>> PDFium already exists, skipping download");
-        return Ok((target_name, pdfium_dir));
+        return Ok(pdfium_dir);
     }
 
     let asset_name = determine_pdfium_platform();
@@ -105,5 +92,5 @@ pub fn install_pdfium(vcpkg_root: &Path) -> Result<(String, PathBuf)> {
 
     println!(">>> PDFium extracted successfully");
 
-    Ok((target_name, pdfium_dir))
+    Ok(pdfium_dir)
 }
