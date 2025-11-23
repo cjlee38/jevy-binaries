@@ -18,8 +18,8 @@ fn main() -> Result<()> {
     println!("🔧 Vcpkg Triplet: {}", triplet);
 
     let vcpkg_root = prepare_vcpkg()?;
-    create_custom_triplet(&vcpkg_root, &triplet, &os)?;
-    run_vcpkg_install(&vcpkg_root, &triplet)?;
+    // create_custom_triplet(&vcpkg_root, &triplet, &os)?;
+    // run_vcpkg_install(&vcpkg_root, &triplet)?;
     download_and_extract_pdfium(&vcpkg_root, &os, &arch)?;
     harvest_artifacts(&vcpkg_root, &triplet, &os, &arch)?;
 
@@ -150,34 +150,34 @@ fn harvest_artifacts(vcpkg_root: &Path, triplet: &str, os: &str, arch: &str) -> 
     let lib_ext = if os == "windows" { "lib" } else { "a" };
     let options = fs_extra::dir::CopyOptions::new().overwrite(true).content_only(true);
 
-    // Harvest FFmpeg from vcpkg
-    let ffmpeg_output_dir = dist_root.join(format!("ffmpeg-{}", target_name));
-    if ffmpeg_output_dir.exists() {
-        fs::remove_dir_all(&ffmpeg_output_dir)?;
-    }
-    fs::create_dir_all(ffmpeg_output_dir.join("lib"))?;
-    fs::create_dir_all(ffmpeg_output_dir.join("include"))?;
+    // // Harvest FFmpeg from vcpkg
+    // let ffmpeg_output_dir = dist_root.join(format!("ffmpeg-{}", target_name));
+    // if ffmpeg_output_dir.exists() {
+    //     fs::remove_dir_all(&ffmpeg_output_dir)?;
+    // }
+    // fs::create_dir_all(ffmpeg_output_dir.join("lib"))?;
+    // fs::create_dir_all(ffmpeg_output_dir.join("include"))?;
 
-    let installed_dir = vcpkg_root.join("installed").join(triplet);
-    println!("🚜 Harvesting FFmpeg artifacts from {:?} to {:?}", installed_dir, ffmpeg_output_dir);
+    // let installed_dir = vcpkg_root.join("installed").join(triplet);
+    // println!("🚜 Harvesting FFmpeg artifacts from {:?} to {:?}", installed_dir, ffmpeg_output_dir);
 
-    let lib_src = installed_dir.join("lib");
-    let lib_dst = ffmpeg_output_dir.join("lib");
+    // let lib_src = installed_dir.join("lib");
+    // let lib_dst = ffmpeg_output_dir.join("lib");
 
-    for entry in fs::read_dir(lib_src)? {
-        let entry = entry?;
-        let path = entry.path();
-        if let Some(ext) = path.extension() {
-            if ext == lib_ext {
-                let file_name = path.file_name().unwrap();
-                fs::copy(&path, lib_dst.join(file_name))?;
-            }
-        }
-    }
+    // for entry in fs::read_dir(lib_src)? {
+    //     let entry = entry?;
+    //     let path = entry.path();
+    //     if let Some(ext) = path.extension() {
+    //         if ext == lib_ext {
+    //             let file_name = path.file_name().unwrap();
+    //             fs::copy(&path, lib_dst.join(file_name))?;
+    //         }
+    //     }
+    // }
 
-    let include_src = installed_dir.join("include");
-    let include_dst = ffmpeg_output_dir.join("include");
-    fs_extra::dir::copy(&include_src, &include_dst, &options)?;
+    // let include_src = installed_dir.join("include");
+    // let include_dst = ffmpeg_output_dir.join("include");
+    // fs_extra::dir::copy(&include_src, &include_dst, &options)?;
 
     // Harvest PDFium
     let pdfium_dir = vcpkg_root.join("pdfium");
