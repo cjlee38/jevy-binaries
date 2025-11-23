@@ -58,13 +58,9 @@ jobs:
       - name: Compress Artifacts
         shell: bash
         run: |
-          cd dist
-          # tar -czvf ffmpeg-${{ matrix.target }}.tar.gz ffmpeg-${{ matrix.target }}
-          tar -czvf pdfium-${{ matrix.target }}.tar.gz pdfium-${{ matrix.target }}
+          tar -czvf dist-${{ matrix.target }}.tar.gz -C dist .
       - name: Upload Release Assets
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: |
-            # dist/ffmpeg-${{ matrix.target }}.tar.gz
-            dist/pdfium-${{ matrix.target }}.tar.gz
+          files: dist-${{ matrix.target }}.tar.gz
