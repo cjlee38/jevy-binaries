@@ -92,12 +92,17 @@ fn prepare_vcpkg(triplet: &str) -> Result<PathBuf> {
         "x86_64" | "x64" => "x86_64",
         _ => panic!("Unsupported architecture: {}", ARCH),
     };
+    let vcpkg_system = match OS {
+        "macos" => "Darwin",
+        "linux" => "Linux",
+        _ => panic!("Unsupported OS for triplet creation: {}", OS),
+    };
     let content = format!(
         "set(VCPKG_TARGET_ARCHITECTURE {})\n\
          set(VCPKG_CRT_LINKAGE dynamic)\n\
          set(VCPKG_LIBRARY_LINKAGE static)\n\
-         set(VCPKG_CMAKE_SYSTEM_NAME Darwin)\n",
-        vcpkg_arch
+         set(VCPKG_CMAKE_SYSTEM_NAME {})\n",
+        vcpkg_arch, vcpkg_system
     );
     fs::write(triplet_file, content)?;
     println!(">>> Created custom triplet: {}", triplet);
