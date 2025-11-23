@@ -36,17 +36,17 @@ fn main() -> Result<()> {
 fn determine_triplet() -> String {
     match OS {
         "macos" => match ARCH {
-            "aarch64" => "arm64-osx-static".to_string(),
-            "x86_64" => "x64-osx-static".to_string(),
+            "aarch64" => "arm64-osx-dynamic".to_string(),
+            "x86_64" => "x64-osx-dynamic".to_string(),
             _ => panic!("Unsupported macOS architecture: {}", ARCH),
         },
         "windows" => match ARCH {
-            "aarch64" => "arm64-windows-static-md".to_string(),
-            "x86_64" => "x64-windows-static-md".to_string(),
+            "aarch64" => "arm64-windows".to_string(),
+            "x86_64" => "x64-windows".to_string(),
             _ => panic!("Unsupported Windows architecture: {}", ARCH),
         },
         "linux" => match ARCH {
-            "x86_64" => "x64-linux-static".to_string(),
+            "x86_64" => "x64-linux-dynamic".to_string(),
             _ => panic!("Unsupported Linux architecture: {}", ARCH),
         },
         _ => panic!("Unsupported OS: {}", OS),
@@ -100,7 +100,7 @@ fn prepare_vcpkg(triplet: &str) -> Result<PathBuf> {
     let content = format!(
         "set(VCPKG_TARGET_ARCHITECTURE {})\n\
          set(VCPKG_CRT_LINKAGE dynamic)\n\
-         set(VCPKG_LIBRARY_LINKAGE static)\n\
+         set(VCPKG_LIBRARY_LINKAGE dynamic)\n\
          set(VCPKG_CMAKE_SYSTEM_NAME {})\n",
         vcpkg_arch, vcpkg_system
     );
