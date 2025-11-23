@@ -50,7 +50,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: vcpkg
-          key: ${{ matrix.os }}-${{ matrix.target }}-vcpkg-${{ hashFiles('src/main.rs') }}
+          key: ${{ matrix.os }}-${{ matrix.target }}-vcpkg-${{ hashFiles('**/src/main.rs') }}
       - name: Run Build Factory
         shell: bash
         env: 
