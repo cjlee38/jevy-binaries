@@ -15,7 +15,7 @@ pub fn install_ffmpeg(vcpkg_root: &Path, triplet: &str) -> Result<PathBuf> {
     };
 
     let package = format!(
-        "ffmpeg[core,avcodec,avformat,avfilter,swresample,swscale,dav1d]:{}",
+        "ffmpeg[core,avcodec,avformat,avfilter,swresample,swscale,dav1d,webp]:{}",
         triplet
     );
 
